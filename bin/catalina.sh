@@ -259,6 +259,11 @@ if [ -e "$JRE_HOME/bin/jshell" ]; then
     if [ -n "$JAVA_ENDORSED_DIRS" ]; then
         echo "Ignoring endorsed directory: $JAVA_ENDORSED_DIRS since we are in >= Java9"
     fi
+else
+    # If CATALINA_HOME/endorsed doesn't exist, use ignored prop
+    if [! -d "$CATALINA_HOME/endorsed" ]; then
+        ENDORSED_PROP=ignore.endorsed.dirs
+    fi
 fi
 
 # Uncomment the following line to make the umask available when using the
