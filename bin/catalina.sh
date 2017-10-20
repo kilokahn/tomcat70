@@ -247,15 +247,18 @@ if [ -z "$LOGGING_MANAGER" ]; then
 fi
 
 # Java 9 no longer supports the java.endorsed.dirs
-# system property. Only try to use it if
-# JAVA_ENDORSED_DIRS was explicitly set
-# or CATALINA_HOME/endorsed exists.
-ENDORSED_PROP=ignore.endorsed.dirs
-if [ -n "$JAVA_ENDORSED_DIRS" ]; then
-    ENDORSED_PROP=java.endorsed.dirs
-fi
-if [ -d "$CATALINA_HOME/endorsed" ]; then
-    ENDORSED_PROP=java.endorsed.dirs
+# system property. Don't use it if you are in a Java >= 9 runtime.
+# It doesn't matter if JAVA_ENDORSED_DIRS was explicitly set
+# just emit a warning that it is being ignored
+
+# Use existence of JRE_HOME/bin/jshell as proxy for Java >= 9 detection
+# Ref: https://git.eclipse.org/r/#/c/105865/ TomcatServerBehaviour.java
+ENDORSED_PROP=java.endorsed.dirs
+if [ -e "$JRE_HOME/bin/jshell" ]; then
+    ENDORSED_PROP=ignore.endorsed.dirs
+    if [ -n "$JAVA_ENDORSED_DIRS" ]; then
+        echo "Ignoring endorsed directory: $JAVA_ENDORSED_DIRS since we are in >= Java9"
+    fi
 fi
 
 # Uncomment the following line to make the umask available when using the

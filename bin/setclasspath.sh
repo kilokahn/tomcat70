@@ -79,10 +79,8 @@ fi
 
 # Don't override the endorsed dir if the user has set it previously
 if [ -z "$JAVA_ENDORSED_DIRS" ]; then
-  # Java 9 no longer supports the java.endorsed.dirs
-  # system property. Only try to use it if
-  # CATALINA_HOME/endorsed exists.
-  if [ -d "$CATALINA_HOME"/endorsed ]; then
+  # Set the default -Djava.endorsed.dirs argument only if <= Java9
+  if [ ! -e "$JRE_HOME/bin/jshell" ]; then
     JAVA_ENDORSED_DIRS="$CATALINA_HOME"/endorsed
   fi
 fi
